@@ -1,15 +1,3 @@
-/**
- * Creates (or promotes) the treasury user + account needed for POST /api/transactions/system/initial-funds.
- *
- * Usage (from backend folder):
- *   node scripts/seed-system-bank.js
- *
- * Env:
- *   MONGO_URI — required (same as server)
- *   SYSTEM_BANK_EMAIL — default system-reserve@bank.local
- *   SYSTEM_BANK_PASSWORD — default ChangeMe_System123!
- */
-
 require("dotenv").config({ path: require("path").join(__dirname, "..", ".env") });
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
@@ -28,9 +16,6 @@ const name = "System Reserve";
 const initialBalance = Number(process.env.SYSTEM_BANK_INITIAL_BALANCE || 1000000000);
 
 async function ensureSystemCredentials(user) {
-  // Always ensure the system user's credentials match the configured values.
-  // Defaults are provided above (including pin=1111), so re-running the seed will
-  // reliably reset the system user's PIN/password to the expected ones.
   const updates = {
     password: await bcrypt.hash(password, 10),
     transactionPin: await bcrypt.hash(pin, 10),
@@ -69,7 +54,6 @@ async function mintReserveBalance(accountId, amount) {
     },
   ]);
 
-  // Keep the account document balance in sync for fast reads/UI display.
   await accountModel.updateOne({ _id: accountId }, { $inc: { balance: Number(amount) } });
 }
 

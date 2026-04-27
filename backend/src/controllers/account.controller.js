@@ -1,15 +1,7 @@
-/**
- * Account Controller
- * Manages bank account lifecycle: creation, approval, balance checks, and admin actions.
- */
 const accountModel = require("../models/account.model");
 const { writeAudit } = require("../services/audit.service");
 const userModel = require("../models/user.models");
 
-/**
- * Request creation of a new bank account.
- * Accounts start in PENDING_APPROVAL status.
- */
 async function createAccountController(req, res) {
   try {
     const account = await accountModel.create({
@@ -25,16 +17,12 @@ async function createAccountController(req, res) {
   }
 }
 
-/**
- * Get all accounts for the authenticated user.
- * Balances are hidden by default for security.
- */
 async function getUserAccountsController(req, res) {
   try {
     const accounts = await accountModel.find({ user: req.user._id }).sort({ createdAt: -1 });
     const safeAccounts = accounts.map((account) => {
       const obj = account.toObject();
-      delete obj.balance; // Balance requires PIN verification to see
+      delete obj.balance;
       return obj;
     });
     return res.status(200).json({ accounts: safeAccounts });
@@ -43,9 +31,6 @@ async function getUserAccountsController(req, res) {
   }
 }
 
-/**
- * Unlock account details (like balance) using the transaction PIN.
- */
 async function unlockAccountsController(req, res) {
   try {
     const { pin } = req.body;
@@ -69,9 +54,6 @@ async function unlockAccountsController(req, res) {
   }
 }
 
-/**
- * Fetch the balance for a specific active account.
- */
 async function getAccountBalanceController(req, res) {
   try {
     const account = await accountModel.findOne({
@@ -93,9 +75,6 @@ async function getAccountBalanceController(req, res) {
   }
 }
 
-/**
- * [Admin] Get all accounts pending approval.
- */
 async function getPendingAccountsController(req, res) {
   try {
     const accounts = await accountModel
@@ -108,9 +87,6 @@ async function getPendingAccountsController(req, res) {
   }
 }
 
-/**
- * [Admin] Approve a pending account.
- */
 async function approveAccountController(req, res) {
   try {
     const account = await accountModel.findById(req.params.accountId);
@@ -125,7 +101,6 @@ async function approveAccountController(req, res) {
     account.approvedBy = req.user._id;
     await account.save();
 
-    // Log the approval action
     writeAudit(req, {
       action: "ACCOUNT_APPROVED",
       targetType: "account",
@@ -138,9 +113,6 @@ async function approveAccountController(req, res) {
   }
 }
 
-/**
- * [Admin] Reject a pending account request.
- */
 async function rejectAccountController(req, res) {
   try {
     const account = await accountModel.findById(req.params.accountId);
@@ -155,7 +127,6 @@ async function rejectAccountController(req, res) {
     account.approvedBy = req.user._id;
     await account.save();
 
-    // Log the rejection action
     writeAudit(req, {
       action: "ACCOUNT_REJECTED",
       targetType: "account",
@@ -168,9 +139,6 @@ async function rejectAccountController(req, res) {
   }
 }
 
-/**
- * [Admin] Get all accounts in the system.
- */
 async function getAllAccountsAdminController(req, res) {
   try {
     const accounts = await accountModel
@@ -191,9 +159,6 @@ async function getAllAccountsAdminController(req, res) {
   }
 }
 
-/**
- * [Admin] Freeze an account (revoke access).
- */
 async function revokeAccountAdminController(req, res) {
   try {
     const account = await accountModel.findById(req.params.accountId);
@@ -212,7 +177,6 @@ async function revokeAccountAdminController(req, res) {
     account.approvedBy = req.user._id;
     await account.save();
 
-    // Log the revocation
     writeAudit(req, {
       action: "ACCOUNT_REVOKED",
       targetType: "account",
@@ -226,9 +190,6 @@ async function revokeAccountAdminController(req, res) {
   }
 }
 
-/**
- * [Admin] Restore a frozen account.
- */
 async function unrevokeAccountAdminController(req, res) {
   try {
     const account = await accountModel.findById(req.params.accountId);
@@ -244,7 +205,6 @@ async function unrevokeAccountAdminController(req, res) {
     account.approvedBy = req.user._id;
     await account.save();
 
-    // Log the restoration
     writeAudit(req, {
       action: "ACCOUNT_RESTORED",
       targetType: "account",

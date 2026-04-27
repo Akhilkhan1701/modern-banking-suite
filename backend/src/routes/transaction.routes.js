@@ -8,10 +8,10 @@ const { createTransactionSchema, initialFundsSchema, myTransactionsSchema } = re
 
 const transactionRoutes=Router();
 
-transactionRoutes.post("/",authMiddleware.authMiddleware,validate(createTransactionSchema),transactionController.createTransaction)
+transactionRoutes.post("/",authMiddleware.authMiddleware,validate(createTransactionSchema),transactionController.transferFundsController)
 
-transactionRoutes.post("/system/initial-funds",authMiddleware.authSystemMiddleware,validate(initialFundsSchema),transactionController.createInitialFundsTransaction)
-transactionRoutes.get("/me",authMiddleware.authMiddleware,validate(myTransactionsSchema),transactionController.getMyTransactions)
+transactionRoutes.post("/system/initial-funds",authMiddleware.authSystemMiddleware,validate(initialFundsSchema),transactionController.systemInitialFundsController)
+transactionRoutes.get("/me",authMiddleware.authMiddleware,validate(myTransactionsSchema),transactionController.getMyTransactionsController)
 
 
 module.exports= transactionRoutes

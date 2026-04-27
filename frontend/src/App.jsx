@@ -118,10 +118,10 @@ function Landing() {
       <section className="card" style={{ marginTop: '2rem' }}>
         <h3 style={{ color: '#4f46e5' }}>What you can do</h3>
         <ul style={{ lineHeight: '1.8' }}>
-          <li><span role="img" aria-label="check">✅</span> Create accounts (admin approval required)</li>
-          <li><span role="img" aria-label="money">💸</span> Send money using a 4-digit PIN</li>
-          <li><span role="img" aria-label="history">📜</span> View transaction history</li>
-          <li><span role="img" aria-label="admin">🛡️</span> Admin panel: approve accounts + fund users</li>
+          <li>Create accounts (admin approval required)</li>
+          <li>Send money using a 4-digit PIN</li>
+          <li>View transaction history</li>
+          <li>Admin panel: approve accounts + fund users</li>
         </ul>
       </section>
     </div>
@@ -207,9 +207,9 @@ function AuthPage({ mode, authValue }) {
               required
             />
           </label>
-          {error ? <div className="alert error-alert">⚠️ {error}</div> : null}
+          {error ? <div className="alert error-alert">Error: {error}</div> : null}
           <button type="submit" disabled={loading}>
-            {loading ? "⏳ Please wait..." : isLogin ? "Login" : "Register"}
+            {loading ? "Please wait..." : isLogin ? "Login" : "Register"}
           </button>
         </form>
         <p className="muted">
@@ -374,10 +374,10 @@ function AccountsPage({ authValue }) {
         </div>
         <div className="row">
           <button onClick={loadAccounts} disabled={loading}>
-            {loading ? "🔄 Refreshing..." : "🔄 Refresh"}
+            {loading ? "Refreshing..." : "Refresh"}
           </button>
           <button onClick={createAccount} disabled={creating}>
-            {creating ? "⏳ Submitting..." : "➕ Request New Account"}
+            {creating ? "Submitting..." : "Request New Account"}
           </button>
         </div>
       </div>
@@ -395,12 +395,12 @@ function AccountsPage({ authValue }) {
           />
         </label>
         <button type="submit" disabled={unlocking}>
-          {unlocking ? "🔓 Unlocking..." : unlocked ? "✅ Unlocked" : "🔒 Unlock"}
+          {unlocking ? "Unlocking..." : unlocked ? "Unlocked" : "Unlock"}
         </button>
       </form>
 
-      {message ? <div className="alert success-alert">✅ {message}</div> : null}
-      {error ? <div className="alert error-alert">⚠️ {error}</div> : null}
+      {message ? <div className="alert success-alert">{message}</div> : null}
+      {error ? <div className="alert error-alert">Error: {error}</div> : null}
       <div className="table-wrap">
         <table>
           <thead>
@@ -421,7 +421,7 @@ function AccountsPage({ authValue }) {
                 <td><span style={{ fontFamily: "monospace", color: "#4f46e5", fontWeight: 600 }}>{account._id}</span></td>
                 <td><span className={`status-badge status-${account.status?.toLowerCase()}`}>{account.status}</span></td>
                 <td>{account.currency}</td>
-                <td><strong style={{ fontSize: "1.1em" }}>{unlocked ? `₹${account.balance ?? 0}` : "🔒 Locked"}</strong></td>
+                <td><strong>{unlocked ? `₹${account.balance ?? 0}` : "Locked"}</strong></td>
               </tr>
             ))}
           </tbody>
@@ -517,10 +517,10 @@ function TransferPage({ authValue }) {
             placeholder="****"
           />
         </label>
-        <button type="submit" disabled={loading || accounts.length === 0}>{loading ? "⏳ Sending..." : "💸 Send Money"}</button>
+        <button type="submit" disabled={loading || accounts.length === 0}>{loading ? "Sending..." : "Send Money"}</button>
       </form>
-      {message ? <div className="alert success-alert">✅ {message}</div> : null}
-      {error ? <div className="alert error-alert">⚠️ {error}</div> : null}
+      {message ? <div className="alert success-alert">{message}</div> : null}
+      {error ? <div className="alert error-alert">Error: {error}</div> : null}
     </section>
   );
 }
@@ -555,9 +555,9 @@ function HistoryPage({ authValue }) {
     <section className="card">
       <div className="section-head" style={{ marginBottom: '1rem' }}>
         <h3>Transaction History</h3>
-        <button onClick={loadHistory} disabled={loading}>{loading ? "🔄 Refreshing..." : "🔄 Refresh"}</button>
+        <button onClick={loadHistory} disabled={loading}>{loading ? "Refreshing..." : "Refresh"}</button>
       </div>
-      {error ? <div className="alert error-alert">⚠️ {error}</div> : null}
+      {error ? <div className="alert error-alert">Error: {error}</div> : null}
       <div className="table-wrap">
         <table>
           <thead>
@@ -693,8 +693,8 @@ function AdminPage({ authValue }) {
   return (
     <section className="card">
       <h3>Admin Controls</h3>
-      {message ? <div className="alert success-alert">✅ {message}</div> : null}
-      {error ? <div className="alert error-alert">⚠️ {error}</div> : null}
+      {message ? <div className="alert success-alert">{message}</div> : null}
+      {error ? <div className="alert error-alert">Error: {error}</div> : null}
 
       <h4>Pending Account Approvals</h4>
       <div className="table-wrap">
@@ -718,9 +718,9 @@ function AdminPage({ authValue }) {
                 <td>{account.user?.name}</td>
                 <td>{account.user?.email}</td>
                 <td className="row">
-                  <button type="button" onClick={() => reviewAccount(account._id, "approve")}>✅ Approve</button>
+                  <button type="button" onClick={() => reviewAccount(account._id, "approve")}>Approve</button>
                   <button type="button" className="danger" onClick={() => reviewAccount(account._id, "reject")}>
-                    ❌ Reject
+                    Reject
                   </button>
                 </td>
               </tr>
@@ -739,7 +739,7 @@ function AdminPage({ authValue }) {
           Amount
           <input type="number" min="1" step="0.01" value={fundAmount} onChange={(e) => setFundAmount(e.target.value)} required placeholder="e.g. 5000.00" />
         </label>
-        <button type="submit" disabled={funding}>{funding ? "⏳ Funding..." : "💸 Fund Account"}</button>
+        <button type="submit" disabled={funding}>{funding ? "Funding..." : "Fund Account"}</button>
       </form>
 
       <h4 style={{ marginTop: '2rem' }}>Manage Accounts</h4>
@@ -771,11 +771,11 @@ function AdminPage({ authValue }) {
                 <td className="row">
                   {account.status === "FROZEN" ? (
                     <button type="button" onClick={() => manageAccount(account._id, "unrevoke")}>
-                      🔓 Restore
+                      Restore
                     </button>
                   ) : (
                     <button type="button" className="danger" onClick={() => manageAccount(account._id, "revoke")}>
-                      🔒 Revoke
+                      Revoke
                     </button>
                   )}
                 </td>

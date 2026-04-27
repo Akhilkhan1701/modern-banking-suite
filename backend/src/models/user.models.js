@@ -1,7 +1,3 @@
-/**
- * User Model
- * Stores user credentials, profile information, and security PINs.
- */
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
@@ -23,17 +19,17 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "Password is required"],
       minlength: [6, "Password must be at least 6 characters long"],
-      select: false, // Don't return password by default
+      select: false,
     },
     transactionPin: {
       type: String,
       required: [true, "Transaction PIN is required"],
-      select: false, // Don't return PIN by default
+      select: false,
     },
     systemUser: {
       type: Boolean,
       default: false,
-      immutable: true, // Only set during creation or via seed
+      immutable: true,
       select: false,
     },
   },
@@ -42,9 +38,6 @@ const userSchema = new mongoose.Schema(
   },
 );
 
-/**
- * Hash password and transaction PIN before saving.
- */
 userSchema.pre("save", async function userPreSave() {
   if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 10);
@@ -55,16 +48,10 @@ userSchema.pre("save", async function userPreSave() {
   }
 });
 
-/**
- * Verifies the user's login password.
- */
 userSchema.methods.comparePassword = async function comparePassword(password) {
   return bcrypt.compare(password, this.password);
 };
 
-/**
- * Verifies the user's 4-digit transaction PIN.
- */
 userSchema.methods.compareTransactionPin = async function compareTransactionPin(pin) {
   if (!this.transactionPin) {
     return false;

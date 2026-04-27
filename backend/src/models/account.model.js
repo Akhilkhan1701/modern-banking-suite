@@ -1,7 +1,3 @@
-/**
- * Account Model
- * Represents a user's bank account. Tracks status, currency, and cached balance.
- */
 const mongoose=require("mongoose")
 const ledgerModel=require("./ledger.model")
 
@@ -48,13 +44,8 @@ const accountSchema=new mongoose.Schema({
     timestamps:true
 })
 
-// Optimize queries for user accounts
 accountSchema.index({user:1,status:1})
 
-/**
- * Calculates the actual balance of the account by aggregating all ledger entries.
- * This is the source of truth for account balances.
- */
 accountSchema.methods.getBalance=async function(){
     const balaceData=await ledgerModel.aggregate([
         {$match:{account:this._id}},
@@ -79,9 +70,6 @@ accountSchema.methods.getBalance=async function(){
     return balaceData[0].balance
 }
 
-
-
-
 const accountModel=mongoose.model("account",accountSchema)
 
-module.exports=accountModel
+module.exports=accountModel;

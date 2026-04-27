@@ -1,7 +1,3 @@
-/**
- * Express Application Configuration
- * Sets up middleware, routes, and security features.
- */
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
@@ -20,10 +16,8 @@ const transactionRoutes = require("./routes/transaction.routes");
 
 const app = express();
 
-// Required for rate limiting behind proxies (e.g., Heroku, Nginx)
 app.set("trust proxy", 1);
 
-// HTTP Logging with unique request IDs
 app.use(
   pinoHttp({
     logger,
@@ -36,17 +30,14 @@ app.use(
   }),
 );
 
-// Security Headers
 app.use(
   helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" },
   }),
 );
 
-// Gzip Compression
 app.use(compression());
 
-// CORS Setup
 const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:5173")
   .split(",")
   .map((origin) => origin.trim())
@@ -59,11 +50,10 @@ app.use(
   }),
 );
 
-// Body Parsers
 app.use(express.json());
+
 app.use(cookieParser());
 
-// Rate Limiting for Authentication
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 50,
@@ -71,7 +61,6 @@ const authLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Rate Limiting for Transactions
 const txnLimiter = rateLimit({
   windowMs: 60 * 1000,
   limit: 30,
@@ -79,42 +68,22 @@ const txnLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Health Check
 app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
-// API Routes
 app.use("/api/auth", authLimiter, authRouter);
 app.use("/api/accounts", accountRouter);
 app.use("/api/transactions", txnLimiter, transactionRoutes);
 
-// Frontend Integration
-// Serve static files from the React app in production
 const frontendDistPath = path.resolve(__dirname, "../../frontend/dist");
 app.use(express.static(frontendDistPath));
 
-// Client-side routing fallback
 app.use((req, res, next) => {
   if (req.path.startsWith("/api")) {
     return next();
   }
-  if (req.method !== "GET") {
-    return next();
-  }
-  return res.sendFile(path.join(frontendDistPath, "index.html"), (error) => {
-    if (error) {
-      next();
-    }
-  });
-});
-
-// 404 Handler
-app.use((req, res) => {
-  if (req.path.startsWith("/api")) {
-    return res.status(404).json({ message: "Route not found" });
-  }
-  return res.status(404).send("Not found");
+  res.sendFile(path.join(frontendDistPath, "index.html"));
 });
 
 module.exports = app;

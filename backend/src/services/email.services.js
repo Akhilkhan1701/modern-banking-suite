@@ -1,22 +1,12 @@
-/**
- * Email Service
- * Handles outbound email notifications using Nodemailer and Gmail OAuth2.
- */
 require('dotenv').config();
 const nodemailer = require('nodemailer');
 
-/**
- * Check if all required environment variables for email are present.
- */
 const isEmailConfigured =
   !!process.env.EMAIL_USER &&
   !!process.env.CLIENT_ID &&
   !!process.env.CLIENT_SECRET &&
   !!process.env.REFRESH_TOKEN;
 
-/**
- * Initialize the transporter if configuration is valid.
- */
 const transporter = isEmailConfigured
   ? nodemailer.createTransport({
       service: 'gmail',
@@ -30,9 +20,6 @@ const transporter = isEmailConfigured
     })
   : null;
 
-/**
- * Verify email connection on startup.
- */
 if (transporter) {
   transporter.verify((error) => {
     if (error) {
@@ -43,9 +30,6 @@ if (transporter) {
   });
 }
 
-/**
- * Internal helper to send emails.
- */
 const sendEmail = async (to, subject, text, html) => {
   try {
     if (!transporter) {
@@ -65,9 +49,6 @@ const sendEmail = async (to, subject, text, html) => {
   }
 };
 
-/**
- * Sends a welcome email to newly registered users.
- */
 async function sendRegistrationEmail(userEmail,name){
     const subject="Welcome to Banking App"
     const text=`Hi ${name},\n\nThank you for registering with our banking app! We're excited to have you on board.\n\nBest regards,\nBanking App Team`
@@ -76,9 +57,6 @@ async function sendRegistrationEmail(userEmail,name){
     await sendEmail(userEmail,subject,text,html)    
 }
 
-/**
- * Sends a notification for successful transactions.
- */
 async function sendTransactionEmail(userEmail,name,amount,type){
     const subject="Transaction Alert"
     const text=`Hi ${name},\n\nA ${type} transaction of $${amount} has been made on your account. If you did not authorize this, please contact support.\n\nBest regards,\nBanking App Team`
@@ -87,9 +65,6 @@ async function sendTransactionEmail(userEmail,name,amount,type){
     await sendEmail(userEmail,subject,text,html)
 }
 
-/**
- * Sends a notification when a transaction fails.
- */
 async function sendFailureEmail(userEmail,name,amount,type){
     const subject="Transaction Failed"
     const text=`Hi ${name},\n\nA ${type} transaction of $${amount} has failed. Please check your balance and try again.\n\nBest regards,\nBanking App Team`

@@ -30,7 +30,7 @@ jobs:
         working-directory: frontend
 
       - name: Backend syntax check
-        run: node --check serer.js
+        run: node --check server.js
         working-directory: backend
 
       - name: Frontend lint
